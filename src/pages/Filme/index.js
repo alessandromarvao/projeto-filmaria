@@ -29,11 +29,29 @@ export default function Filme() {
 
         loadFilme();
 
-        return () => {
-            console.log("Componente desmontado");
-        }
-
     }, [history, id]);
+
+    function salvarFilme() {
+        const minhaLista = localStorage.getItem('filmes');
+
+        let filmesSalvos = JSON.parse(minhaLista) || [];;
+
+        // Verificando se a lista só tem um item, pois, se isso acontecer, dará problema abaixo, no método some (pois será um objeto e some não percorre objeto)
+        let isList = Array.isArray(filmesSalvos);
+        if (isList) {
+            // Caso o filme selecionado já estiver salvo
+            const hasFilme = filmesSalvos.some((filmeSalvo) => filmeSalvo.id === filme.id);
+
+            if (hasFilme) {
+                alert("Você já possui este filme salvo!");
+                return; // para a execução do código aqui
+            }
+
+            filmesSalvos.push(filme);
+            localStorage.setItem('filmes', JSON.stringify(filmesSalvos));
+            alert("Filme salvo com sucesso!");
+        }
+    }
 
     if (loading) {
         return (
@@ -51,7 +69,7 @@ export default function Filme() {
             <p>{filme.sinopse}</p>
 
             <div className="botoes">
-                <button onClick={()=>{}}>Salvar</button>
+                <button onClick={salvarFilme}>Salvar</button>
                 <button>
                     <a target="blank" href={`https://youtube.com/results?search_query=${filme.nome}+Trailer`}>Trailer</a>
                 </button>
